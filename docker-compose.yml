@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  chatgpttoapi:
+    image: chatgpttoapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports: 
+      - 8080:8080/tcp
+      - 8080:8080/udp
+    tty: true
+    stdin_open: true
+    container_name: chatgpttoapi
