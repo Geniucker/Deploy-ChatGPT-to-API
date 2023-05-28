@@ -12,3 +12,4 @@ services:
     tty: true
     stdin_open: true
     container_name: chatgpttoapi
+    restart: unless-stopped

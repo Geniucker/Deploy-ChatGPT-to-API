@@ -55,20 +55,24 @@ if __name__=="__main__":
 
     # run
     cmd = "./freechatgpt"
-    screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
-    while True:
-        line = screenData.stdout.readline().decode("utf-8").strip()
-        if line.find("[GIN]") != -1:
-            status = line.split()[5].strip()
-            if status == "200":
-                INFO(line)
-            elif status[0] == "5":
-                ERROR(line)
-                ERROR("detected 5xx, restarting...")
-                screenData.terminate()
-                break
-            else:
-                WARNING(line)
-        else:
-            INFO(line)
+    try:
+        while True:
+            screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
+            while True:
+                line = screenData.stdout.readline().decode("utf-8").strip()
+                if line.find("[GIN]") != -1:
+                    status = line.split()[5].strip()
+                    if status == "200":
+                        INFO(line)
+                    elif status[0] == "5":
+                        ERROR(line)
+                        ERROR("detected 5xx, restarting...")
+                        screenData.terminate()
+                        break
+                    else:
+                        WARNING(line)
+                else:
+                    INFO(line)
+    except:
+        screenData.terminate()
         
