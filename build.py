@@ -74,8 +74,9 @@ while "continue" != input("type continue to continue:"):
     pass
 
 # set proxy
-os.environ["HTTPS_PROXY"] = run.proxy
-os.environ["HTTP_PROXY"] = run.proxy
+if run.proxy != "":
+    os.environ["HTTPS_PROXY"] = run.proxy
+    os.environ["HTTP_PROXY"] = run.proxy
 
 if choice == "1":
     if not testCMD("docker"):
