@@ -48,6 +48,7 @@ if not os.path.exists("ChatGPT-to-API"):
     elif choice == "2":
         os.system("git clone git@github.com:Geniucker/ChatGPT-to-API.git")
 else:
+    print("Try to update ChatGPT-to-API...")
     os.system("cd ChatGPT-to-API && git pull && cd ..")
 
 choice = ""
