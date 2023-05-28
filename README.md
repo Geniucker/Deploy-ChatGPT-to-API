@@ -4,6 +4,7 @@ However, it's docs are not specific. This repo is to help you easily config and 
 
 ## Requirements
 - git  
+- python3  
 - Docker (if deploy in Docker)  
 - golang and `go` command in PATH (if deploy in host)  
 - One or more ChatGPT accounts  
