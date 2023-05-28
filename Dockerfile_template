@@ -5,9 +5,8 @@ COPY ChatGPT-to-API /root/ChatGPT-to-API
 WORKDIR /root/ChatGPT-to-API
 
 
-ENV http_proxy=socks5://host.docker.internal:7895
-ENV https_proxy=socks5://host.docker.internal:7895
-ENV ALL_PROXY=socks5://host.docker.internal:7895
+{}
+{}
 
 RUN go build && \
     cd tools/authenticator && \

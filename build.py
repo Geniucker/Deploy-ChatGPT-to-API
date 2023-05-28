@@ -77,6 +77,19 @@ while "continue" != input("type continue to continue:"):
 if run.proxy != "":
     os.environ["HTTPS_PROXY"] = run.proxy
     os.environ["HTTP_PROXY"] = run.proxy
+    with open("Dockerfile_template", "r") as f:
+        dockerfile = f.read()
+    with open("Dockerfile", "w") as f:
+        if run.proxy.split(":")[0] in ["127.0.0.1", "localhost", "::1"]:
+            proxy = "host.docker.internal:{}".format(run.proxy.split(":")[1])
+        else:
+            proxy = run.proxy
+        f.write(
+            dockerfile.format(
+                "ENV http_proxy {}://{}".format(run.proxy_type, proxy),
+                "ENV https_proxy {}://{}".format(run.proxy_type, proxy)
+            )
+        )
 
 if choice == "1":
     if not testCMD("docker"):

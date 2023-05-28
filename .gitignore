@@ -3,3 +3,4 @@
 /redeploy.sh
 __pycache__/
 .vscode/
+/Dockerfile
