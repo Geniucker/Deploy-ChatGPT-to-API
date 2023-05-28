@@ -74,40 +74,51 @@ print()
 while "continue" != input("type continue to continue:"):
     pass
 
-# set proxy
-if run.proxy != "":
-    os.environ["HTTPS_PROXY"] = run.proxy
-    os.environ["HTTP_PROXY"] = run.proxy
-    with open("Dockerfile_template", "r") as f:
-        dockerfile = f.read()
-    with open("Dockerfile", "w") as f:
-        if run.proxy.split(":")[0] in ["127.0.0.1", "localhost", "::1"]:
-            proxy = "host.docker.internal:{}".format(run.proxy.split(":")[1])
-        else:
-            proxy = run.proxy
-        f.write(
-            dockerfile.format(
-                "ENV http_proxy {}://{}".format(run.proxy_type, proxy),
-                "ENV https_proxy {}://{}".format(run.proxy_type, proxy)
-            )
-        )
 
+# build in docker
 if choice == "1":
     if not testCMD("docker"):
         print("Please install docker first.")
         time.sleep(3)
         exit(1)
+
+    # set proxy
+    with open("Dockerfile_template", "r") as f:
+        dockerfile = f.read()
+    if run.proxy != "":
+        with open("Dockerfile", "w") as f:
+            if run.proxy.split(":")[0] in ["127.0.0.1", "localhost", "::1"]:
+                proxy = "host.docker.internal:{}".format(run.proxy.split(":")[1])
+            else:
+                proxy = run.proxy
+            f.write(
+                dockerfile.format(
+                    "ENV http_proxy {}://{}".format(run.proxy_type, proxy),
+                    "ENV https_proxy {}://{}".format(run.proxy_type, proxy)
+                )
+            )
+    else:
+        with open("Dockerfile", "w") as f:
+            f.write(dockerfile.format("", ""))
+
     os.system("docker compose down")
     if getoutput("docker image ls").find("chatgpttoapi") != -1:
         os.system("docker image rm chatgpttoapi")
     os.system("docker compose build")
-    os.system("docker compose up -d")
+
+# build in host
 elif choice == "2":
     os.chdir("ChatGPT-to-API")
     if not testCMD("go"):
         print("Please install go first.")
         time.sleep(3)
         exit(1)
+
+    # set proxy
+    if run.proxy != "":
+        os.environ["https_proxy"] = run.proxy
+        os.environ["http_proxy"] = run.proxy
+
     os.system("go build")
     os.system("cd tools/authenticator && go build && cd ../..")
     if sys.platform.find("win32") != -1:

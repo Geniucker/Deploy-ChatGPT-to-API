@@ -30,6 +30,7 @@ if __name__=="__main__":
         os.environ["http_proxy"] = "{}://{}".format(proxy_type, proxy)
     os.environ["SERVER_HOST"] = server_host
     os.environ["SERVER_PORT"] = server_port
+    os.environ["GIN_MODE"] = "release"
     # config access_tokens
     with open("accounts.txt", "w") as f:
         for i in accounts:
