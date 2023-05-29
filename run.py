@@ -51,6 +51,11 @@ if __name__=="__main__":
         f.write("[")
         f.write(",".join(access_token))
         f.write("]")
+    with open("./authenticated_accounts.txt", "r") as f:
+        authenticated_accounts = f.read().strip().splitlines()
+    for i in authenticated_accounts:
+        i = i.strip().split(":")[0]
+        INFO("authenticated account: {}".format(i))
     os.system("rm access_tokens.txt authenticated_accounts.txt proxies.txt accounts.txt")
 
 
