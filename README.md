@@ -22,7 +22,7 @@ However, it's docs are not specific. This repo is to help you easily config and 
 3. run `build.py` and follow the instructions.  
 4. run the service:  
    **If deployed in docker**:  
-   open a terminal in `/dcta/`. run `docker compose up -d --build`  
+   open a terminal in `/dcta/`. run `docker compose up -d`  
    **If deployed in host**:
    open a terminal in `/dcta/`. run `run.py`  
 5. Enjoy~
