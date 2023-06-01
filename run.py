@@ -31,38 +31,38 @@ if __name__=="__main__":
     os.environ["SERVER_HOST"] = server_host
     os.environ["SERVER_PORT"] = server_port
     os.environ["GIN_MODE"] = "release"
-    # config access_tokens
-    with open("accounts.txt", "w") as f:
-        for i in accounts:
-            f.write("{}:{}\n".format(i, accounts[i]))
-    with open("proxies.txt", "w") as f:
-        f.write(proxy)
-    os.system("touch access_tokens.txt authenticated_accounts.txt")
-    if sys.platform.find("win32") == -1:
-        os.system("./authenticator > /dev/null 2>&1")
-    else:
-        os.system("authenticator.exe > NUL 2>&1")
-    with open("access_tokens.txt") as f:
-        access_token = f.read().strip().splitlines()
-    for i in range(len(access_token)):
-        access_token[i] = access_token[i].strip()
-        access_token[i] = "\"{}\"".format(access_token[i])
-    with open("./access_tokens.json", "w") as f:
-        f.write("[")
-        f.write(",".join(access_token))
-        f.write("]")
-    with open("./authenticated_accounts.txt", "r") as f:
-        authenticated_accounts = f.read().strip().splitlines()
-    for i in authenticated_accounts:
-        i = i.strip().split(":")[0]
-        INFO("authenticated account: {}".format(i))
-    os.system("rm access_tokens.txt authenticated_accounts.txt proxies.txt accounts.txt")
+    while True:
+        # config access_tokens
+        with open("accounts.txt", "w") as f:
+            for i in accounts:
+                f.write("{}:{}\n".format(i, accounts[i]))
+        with open("proxies.txt", "w") as f:
+            f.write(proxy)
+        os.system("touch access_tokens.txt authenticated_accounts.txt")
+        if sys.platform.find("win32") == -1:
+            os.system("./authenticator > /dev/null 2>&1")
+        else:
+            os.system("authenticator.exe > NUL 2>&1")
+        with open("access_tokens.txt") as f:
+            access_token = f.read().strip().splitlines()
+        for i in range(len(access_token)):
+            access_token[i] = access_token[i].strip()
+            access_token[i] = "\"{}\"".format(access_token[i])
+        with open("./access_tokens.json", "w") as f:
+            f.write("[")
+            f.write(",".join(access_token))
+            f.write("]")
+        with open("./authenticated_accounts.txt", "r") as f:
+            authenticated_accounts = f.read().strip().splitlines()
+        for i in authenticated_accounts:
+            i = i.strip().split(":")[0]
+            INFO("authenticated account: {}".format(i))
+        os.system("rm access_tokens.txt authenticated_accounts.txt proxies.txt accounts.txt")
 
 
-    # run
-    cmd = "./freechatgpt"
-    try:
-        while True:
+        # run
+        cmd = "./freechatgpt"
+        try:
             screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
             while True:
                 line = screenData.stdout.readline().decode("utf-8").strip()
@@ -79,6 +79,6 @@ if __name__=="__main__":
                         WARNING(line)
                 else:
                     INFO(line)
-    except:
-        screenData.terminate()
+        except:
+            screenData.terminate()
         
