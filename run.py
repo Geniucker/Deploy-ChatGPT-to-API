@@ -55,9 +55,43 @@ class Auth0:
             'timeout': 100,
         }
         self.access_token = None
+        self.refresh_token = None
         self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                           'Chrome/109.0.0.0 Safari/537.36'
-    def auth(self, login_local=True) -> str:
+    def __del__(self):
+        if self.refresh_token:
+            url = "https://auth0.openai.com/oauth/revoke"
+            headers = {
+                'User-Agent': self.user_agent
+            }
+            data = {
+                "client_id": "pdlLIX2Y72MIl2rhLhTE9VV9bN905kBh",
+                "token": self.refresh_token
+            }
+            self.session.post(url, headers=headers, data=data, **self.req_kwargs)
+    def refresh(self) -> str:
+        if self.refresh_token:
+            url = "https://auth0.openai.com/oauth/token"
+            headers = {
+                'User-Agent': self.user_agent
+            }
+            data = {
+                "redirect_uri": "com.openai.chat://auth0.openai.com/ios/com.openai.chat/callback",
+                "grant_type": "refresh_token",
+                "client_id": "pdlLIX2Y72MIl2rhLhTE9VV9bN905kBh",
+                "refresh_token": self.refresh_token
+            }
+            resp = self.session.post(url, headers=headers, data=data, **self.req_kwargs)
+            if resp.status_code == 200:
+                json = resp.json()
+                self.access_token = json['access_token']
+                INFO('Refresh token of {} successfully.'.format(self.email))
+                return self.access_token
+            else:
+                raise Exception('Error refresh token.')
+        else:
+            return self.auth()
+    def auth(self) -> str:
         return self.__part_two()
     def __part_two(self) -> str:
         code_challenge = self.code_challenge
@@ -199,6 +233,7 @@ class Auth0:
             if 'access_token' not in json:
                 raise Exception('Get access token failed, maybe you need a proxy.')
             self.access_token = json['access_token']
+            self.refresh_token = json['refresh_token']
             INFO('Get access token of {} successfully.'.format(self.email))
             return self.access_token
         else:
@@ -209,8 +244,9 @@ if __name__=="__main__":
     if proxy.split(":")[0] in ["127.0.0.1", "localhost", "::1"] and os.path.exists("/.dockerenv"):
         proxy = "host.docker.internal:{}".format(proxy.split(":")[1])
     if proxy != "":
+        with open("./proxies.txt", "w") as f:
+            f.write(proxy)
         proxy = "{}://{}".format(proxy_type, proxy)
-        os.environ["http_proxy"] = proxy
     else: proxy = None
     os.environ["SERVER_HOST"] = server_host
     os.environ["SERVER_PORT"] = server_port
@@ -230,8 +266,7 @@ if __name__=="__main__":
         # config access_tokens
         access_token = []
         for i in accout_objs:
-            i.auth()
-            access_token.append(i.access_token)
+            access_token.append(i.refresh())
         for i in range(len(access_token)):
             access_token[i] = access_token[i].strip()
             access_token[i] = "\"{}\"".format(access_token[i])
