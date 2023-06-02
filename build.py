@@ -68,7 +68,7 @@ print("Your proxy is: {}".format(run.proxy))
 print()
 print("your accounts are:")
 for i in run.accounts:
-    print("- {}:{}".format(i, run.accounts[i]))
+    print("- {}".format(i))
 print()
 
 while "continue" != input("type continue to continue:"):

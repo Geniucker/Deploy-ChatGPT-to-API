@@ -11,7 +11,7 @@ However, it's docs are not specific. This repo is to help you easily config and 
 
 ## Steps
 1. Clone this repo to somewhere (suppose `/dcta/`)  
-2. Edit the following variables:  
+2. Edit the following variables in `run.py`:  
    - `proxy`: format: `host:port`. If you don't need proxy, set it to `""`  
    - `proxy_type`: possible values: `"socks5"` or `"http"`  
    - `accounts`: It's a dictionary of accounts' info. Multiple users are supported. See the example bellow  
@@ -19,13 +19,15 @@ However, it's docs are not specific. This repo is to help you easily config and 
    - `server_port`: the port you want ChatGPT-to-API to listen  
 
 ![image](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/73dc990a-a1f2-4c29-99bd-fbfba1077ee1)  
-3. run `build.py` and follow the instructions.  
-4. run the service:  
+3. **If deployed in host**: run `pip3 install -r requirements.txt`  
+   **If deployed in docker**: nothing to do in this step  
+4. run `build.py` and follow the instructions.  
+5. run the service:  
    **If deployed in docker**:  
    open a terminal in `/dcta/`. run `docker compose up -d`  
    **If deployed in host**:
    open a terminal in `/dcta/`. run `run.py`  
-5. Enjoy~
+6. Enjoy~
 
 ## FAQ
 - Q: What if the access_token of OpenAI expire?  
