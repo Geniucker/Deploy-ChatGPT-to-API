@@ -1,0 +1,2 @@
+requests==2.28.1
+pysocks==1.7.1

@@ -19,6 +19,9 @@ WORKDIR /app
 
 COPY --from=builder /root/ChatGPT-to-API/freechatgpt /app/freechatgpt
 COPY run.py /app/run.py
+COPY requirements.txt /app/requirements.txt
+
+RUN pip3 install -r requirements.txt
 
 EXPOSE 8080
 
