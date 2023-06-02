@@ -9,8 +9,6 @@ WORKDIR /root/ChatGPT-to-API
 {}
 
 RUN go build && \
-    cd tools/authenticator && \
-    go build && \
     chmod -R +x /root/ChatGPT-to-API
 
 
@@ -20,7 +18,6 @@ LABEL Name=chatgpttoapi Version=0.0.1
 WORKDIR /app
 
 COPY --from=builder /root/ChatGPT-to-API/freechatgpt /app/freechatgpt
-COPY --from=builder /root/ChatGPT-to-API/tools/authenticator/authenticator /app/authenticator
 COPY run.py /app/run.py
 
 EXPOSE 8080

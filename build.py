@@ -120,12 +120,9 @@ elif choice == "2":
         os.environ["http_proxy"] = run.proxy
 
     os.system("go build")
-    os.system("cd tools/authenticator && go build && cd ../..")
     if sys.platform.find("win32") != -1:
-        os.system("cp tools/authenticator/authenticator.exe ..")
         os.system("cp freechatgpt.exe ..")
     else:
-        os.system("cp tools/authenticator/authenticator ..")
         os.system("cp freechatgpt ..")
 
 
