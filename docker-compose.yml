@@ -9,6 +9,8 @@ services:
     ports: 
       - 8080:8080/tcp
       - 8080:8080/udp
+    volumes:
+      - ./run.py:/app/run.py
     tty: true
     stdin_open: true
     container_name: chatgpttoapi

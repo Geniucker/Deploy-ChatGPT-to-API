@@ -15,6 +15,10 @@ accounts = {
     "user1": "password1",
     # "user2": "password2"
 }
+access_tokens = [
+    # "your access token",
+    # "your another access token"
+]
 server_host = "0.0.0.0"
 server_port = "8080"  # if deploy in docker, set it to "8080"
 
@@ -39,7 +43,7 @@ def generate_code_challenge(code_verifier):
 code_verifier = generate_code_verifier()
 code_challenge = generate_code_challenge(code_verifier)
 class Auth0:
-    def __init__(self, email: str, password: str, proxy: str = None, code_verifier: str = None, code_challenge: str = None):
+    def __init__(self, email: str = None, password: str = None, access_token: str = None, proxy: str = None, code_verifier: str = None, code_challenge: str = None):
         self.session_token = None
         self.email = email
         self.password = password
@@ -54,7 +58,7 @@ class Auth0:
             'verify': where(),
             'timeout': 100,
         }
-        self.access_token = None
+        self.access_token = access_token
         self.refresh_token = None
         self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                           'Chrome/109.0.0.0 Safari/537.36'
@@ -70,7 +74,9 @@ class Auth0:
             }
             self.session.post(url, headers=headers, data=data, **self.req_kwargs)
     def refresh(self) -> str:
-        if self.refresh_token:
+        if self.email is None or self.password is None and self.access_token is not None:
+            return self.access_token
+        elif self.refresh_token:
             url = "https://auth0.openai.com/oauth/token"
             headers = {
                 'User-Agent': self.user_agent
@@ -257,6 +263,15 @@ if __name__=="__main__":
             Auth0(
                 email=i,
                 password=accounts[i],
+                proxy=proxy,
+                code_challenge=code_challenge,
+                code_verifier=code_verifier
+            )
+        )
+    for i in access_tokens:
+        accout_objs.append(
+            Auth0(
+                access_token=i,
                 proxy=proxy,
                 code_challenge=code_challenge,
                 code_verifier=code_verifier
