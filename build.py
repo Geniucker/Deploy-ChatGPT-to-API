@@ -121,7 +121,7 @@ elif choice == "2":
 
     os.system("go build")
     if sys.platform.find("win32") != -1:
-        os.system("cp freechatgpt.exe ..")
+        os.system("copy freechatgpt.exe ..")
     else:
         os.system("cp freechatgpt ..")
 
