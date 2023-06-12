@@ -76,12 +76,12 @@ class Auth0:
             }
             self.session.post(url, headers=headers, data=data, **self.req_kwargs)
     def make_cache(self):
-        with shelve.open('cache', writeback=True) as db:
+        with shelve.open('cache/cache.db', writeback=True) as db:
             db[self.email] = {
                 'access_token': self.access_token
             }
     def load_cache(self):
-        with shelve.open('cache') as db:
+        with shelve.open('cache/cache.db') as db:
             self.access_token = db[self.email]['access_token']
             INFO('Load cache of {} successfully.'.format(self.email))
     def expire(self):

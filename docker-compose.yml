@@ -11,6 +11,7 @@ services:
       - 8080:8080/udp
     volumes:
       - ./run.py:/app/run.py
+      - ./cache:/app/cache
     tty: true
     stdin_open: true
     container_name: chatgpttoapi
