@@ -6,6 +6,7 @@ import os
 import base64
 import hashlib
 import requests
+import shelve
 from urllib.parse import urlparse, parse_qs
 from certifi import where
 
@@ -43,13 +44,14 @@ def generate_code_challenge(code_verifier):
 code_verifier = generate_code_verifier()
 code_challenge = generate_code_challenge(code_verifier)
 class Auth0:
-    def __init__(self, email: str = None, password: str = None, access_token: str = None, proxy: str = None, code_verifier: str = None, code_challenge: str = None):
+    def __init__(self, email: str = None, password: str = None, access_token: str = None, proxy: str = None, code_verifier: str = None, code_challenge: str = None, cache: bool = True):
         self.session_token = None
         self.email = email
         self.password = password
         self.session = requests.Session()
         self.code_verifier = code_verifier
         self.code_challenge = code_challenge
+        self.cache = cache
         self.req_kwargs = {
             'proxies': {
                 'http': proxy,
@@ -73,6 +75,15 @@ class Auth0:
                 "token": self.refresh_token
             }
             self.session.post(url, headers=headers, data=data, **self.req_kwargs)
+    def cache(self):
+        with shelve.open('cache', writeback=True) as db:
+            db[self.email] = {
+                'access_token': self.access_token
+            }
+    def load_cache(self):
+        with shelve.open('cache') as db:
+            self.access_token = db[self.email]['access_token']
+            INFO('Load cache of {} successfully.'.format(self.email))
     def refresh(self) -> str:
         if self.email is None or self.password is None and self.access_token is not None:
             return self.access_token
@@ -96,6 +107,12 @@ class Auth0:
             else:
                 raise Exception('Error refresh token.')
         else:
+            if self.cache:
+                try:
+                    self.load_cache()
+                    return self.access_token
+                except:
+                    pass
             return self.auth()
     def auth(self) -> str:
         return self.__part_two()
