@@ -44,14 +44,14 @@ def generate_code_challenge(code_verifier):
 code_verifier = generate_code_verifier()
 code_challenge = generate_code_challenge(code_verifier)
 class Auth0:
-    def __init__(self, email: str = None, password: str = None, access_token: str = None, proxy: str = None, code_verifier: str = None, code_challenge: str = None, cache: bool = True):
+    def __init__(self, email: str = None, password: str = None, access_token: str = None, proxy: str = None, code_verifier: str = None, code_challenge: str = None):
         self.session_token = None
         self.email = email
         self.password = password
         self.session = requests.Session()
         self.code_verifier = code_verifier
         self.code_challenge = code_challenge
-        self.cache = cache
+        self.cache = True
         self.req_kwargs = {
             'proxies': {
                 'http': proxy,
@@ -75,7 +75,7 @@ class Auth0:
                 "token": self.refresh_token
             }
             self.session.post(url, headers=headers, data=data, **self.req_kwargs)
-    def cache(self):
+    def make_cache(self):
         with shelve.open('cache', writeback=True) as db:
             db[self.email] = {
                 'access_token': self.access_token
@@ -84,6 +84,8 @@ class Auth0:
         with shelve.open('cache') as db:
             self.access_token = db[self.email]['access_token']
             INFO('Load cache of {} successfully.'.format(self.email))
+    def expire(self):
+        self.cache = False
     def refresh(self) -> str:
         if self.email is None or self.password is None and self.access_token is not None:
             return self.access_token
@@ -103,6 +105,7 @@ class Auth0:
                 json = resp.json()
                 self.access_token = json['access_token']
                 INFO('Refresh token of {} successfully.'.format(self.email))
+                self.make_cache()
                 return self.access_token
             else:
                 raise Exception('Error refresh token.')
@@ -113,7 +116,10 @@ class Auth0:
                     return self.access_token
                 except:
                     pass
-            return self.auth()
+            self.auth()
+            self.make_cache()
+            self.cache = True
+            return self.access_token
     def auth(self) -> str:
         return self.__part_two()
     def __part_two(self) -> str:
@@ -320,6 +326,8 @@ if __name__=="__main__":
                         ERROR(line)
                         ERROR("detected 5xx, restarting...")
                         screenData.terminate()
+                        for i in accout_objs:
+                            i.expire()
                         break
                     else:
                         WARNING(line)
