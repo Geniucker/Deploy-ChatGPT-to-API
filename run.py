@@ -76,6 +76,8 @@ class Auth0:
             }
             self.session.post(url, headers=headers, data=data, **self.req_kwargs)
     def make_cache(self):
+        if not os.path.exists('cache'):
+            os.mkdir('cache')
         with shelve.open('cache/cache.db', writeback=True) as db:
             db[self.email] = {
                 'access_token': self.access_token
