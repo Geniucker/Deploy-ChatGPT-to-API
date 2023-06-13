@@ -7,8 +7,10 @@ import base64
 import hashlib
 import requests
 import shelve
+import datetime
 from urllib.parse import urlparse, parse_qs
 from certifi import where
+from datetime import datetime as dt
 
 proxy = "localhost:7890"  # if you don't use proxy, set it to ""
 proxy_type = "socks5"  # socks5 or http
@@ -51,7 +53,7 @@ class Auth0:
         self.session = requests.Session()
         self.code_verifier = code_verifier
         self.code_challenge = code_challenge
-        self.cache = True
+        self.expires = None
         self.req_kwargs = {
             'proxies': {
                 'http': proxy,
@@ -64,6 +66,11 @@ class Auth0:
         self.refresh_token = None
         self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                           'Chrome/109.0.0.0 Safari/537.36'
+        try:
+            self.load_cache()
+        except:
+            self.auth()
+            self.make_cache()
     def __del__(self):
         if self.refresh_token:
             url = "https://auth0.openai.com/oauth/revoke"
@@ -78,18 +85,21 @@ class Auth0:
     def make_cache(self):
         if not os.path.exists('cache'):
             os.mkdir('cache')
-        with shelve.open('cache/cache.db', writeback=True) as db:
+        with shelve.open('cache/cache', writeback=True) as db:
             db[self.email] = {
-                'access_token': self.access_token
+                'access_token': self.access_token,
+                'expires': self.expires
             }
     def load_cache(self):
-        with shelve.open('cache/cache.db') as db:
-            self.access_token = db[self.email]['access_token']
+        with shelve.open('cache/cache') as db:
+            self.access_token = db[self.email]['access_token'],
+            self.access_token = self.access_token[0]
+            self.expires = db[self.email]['expires']
             INFO('Load cache of {} successfully.'.format(self.email))
-    def expire(self):
-        self.cache = False
     def refresh(self) -> str:
         if self.email is None or self.password is None and self.access_token is not None:
+            return self.access_token
+        if self.access_token and self.expires and self.expires > dt.now():
             return self.access_token
         elif self.refresh_token:
             url = "https://auth0.openai.com/oauth/token"
@@ -106,21 +116,15 @@ class Auth0:
             if resp.status_code == 200:
                 json = resp.json()
                 self.access_token = json['access_token']
-                INFO('Refresh token of {} successfully.'.format(self.email))
+                self.expires = dt.utcnow() + datetime.timedelta(seconds=json['expires_in']) - datetime.timedelta(minutes=5)
                 self.make_cache()
+                INFO('Refresh token of {} successfully.'.format(self.email))
                 return self.access_token
             else:
                 raise Exception('Error refresh token.')
         else:
-            if self.cache:
-                try:
-                    self.load_cache()
-                    return self.access_token
-                except:
-                    pass
             self.auth()
             self.make_cache()
-            self.cache = True
             return self.access_token
     def auth(self) -> str:
         return self.__part_two()
@@ -265,6 +269,7 @@ class Auth0:
                 raise Exception('Get access token failed, maybe you need a proxy.')
             self.access_token = json['access_token']
             self.refresh_token = json['refresh_token']
+            self.expires = dt.utcnow() + datetime.timedelta(seconds=json['expires_in']) - datetime.timedelta(minutes=5)
             INFO('Get access token of {} successfully.'.format(self.email))
             return self.access_token
         else:
@@ -330,8 +335,6 @@ if __name__=="__main__":
                         ERROR(line)
                         ERROR("detected 5xx, restarting...")
                         screenData.terminate()
-                        for i in accout_objs:
-                            i.expire()
                         break
                     else:
                         WARNING(line)

@@ -4,7 +4,7 @@
 __pycache__/
 .vscode/
 /Dockerfile
-access_token.json
+access_tokens.json
 proxies.txt
 freechatgpt
 freechatgpt.exe
