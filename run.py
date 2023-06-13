@@ -275,6 +275,8 @@ if __name__=="__main__":
     if proxy.split(":")[0] in ["127.0.0.1", "localhost", "::1"] and os.path.exists("/.dockerenv"):
         proxy = "host.docker.internal:{}".format(proxy.split(":")[1])
     if proxy != "":
+        with open("./proxies.txt", "w") as f:
+            f.write(proxy)
         proxy = "{}://{}".format(proxy_type, proxy)
     else: proxy = None
     os.environ["SERVER_HOST"] = server_host
