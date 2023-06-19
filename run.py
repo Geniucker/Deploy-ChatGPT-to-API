@@ -286,7 +286,7 @@ if __name__=="__main__":
     else: proxy = None
     os.environ["SERVER_HOST"] = server_host
     os.environ["SERVER_PORT"] = server_port
-    os.environ["DISABLE_HISTORY"] = "false"
+    os.environ["ENABLE_HISTORY"] = "false"
     os.environ["GIN_MODE"] = "release"
     accout_objs = []
     for i in accounts:
