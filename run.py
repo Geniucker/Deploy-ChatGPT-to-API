@@ -82,6 +82,10 @@ class Auth0:
                 "token": self.refresh_token
             }
             self.session.post(url, headers=headers, data=data, **self.req_kwargs)
+    def expire(self):
+        self.expires = None
+        self.access_token = None
+        self.make_cache()
     def make_cache(self):
         if not os.path.exists('cache'):
             os.mkdir('cache')
@@ -333,9 +337,16 @@ if __name__=="__main__":
                     if status == "200":
                         INFO(line)
                     elif status[0] == "5":
-                        ERROR(line)
-                        ERROR("detected 5xx, restarting...")
+                        WARNING(line)
+                        WARNING("detected 5xx, restarting...")
                         screenData.terminate()
+                        break
+                    elif status == "401":
+                        ERROR(line)
+                        ERROR("access_token expired, restarting...")
+                        screenData.terminate()
+                        for i in accout_objs:
+                            i.expire()
                         break
                     else:
                         WARNING(line)
