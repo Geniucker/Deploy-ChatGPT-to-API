@@ -8,6 +8,8 @@ import sys
 import run
 import time
 
+def ERROR(msg):
+    print("\033[31m[ERROR]\033[0m" + msg)
 
 def testCMD(cmd:str):
     cmd = cmd.split(" ")[0]
@@ -31,8 +33,8 @@ def testCMD(cmd:str):
 
 
 if not testCMD("git"):
-    print("Please install git first.")
-    time.sleep(3)
+    ERROR("Please install git first.")
+    input("Press enter to exit...")
     exit(1)
 
 if not os.path.exists("ChatGPT-to-API"):
@@ -78,8 +80,8 @@ while "continue" != input("type continue to continue:"):
 # build in docker
 if choice == "1":
     if not testCMD("docker"):
-        print("Please install docker first.")
-        time.sleep(3)
+        ERROR("Please install docker first.")
+        input("Press enter to exit...")
         exit(1)
 
     # set proxy
@@ -110,8 +112,8 @@ if choice == "1":
 elif choice == "2":
     os.chdir("ChatGPT-to-API")
     if not testCMD("go"):
-        print("Please install go first.")
-        time.sleep(3)
+        ERROR("Please install go first.")
+        input("Press enter to exit...")
         exit(1)
 
     # set proxy
