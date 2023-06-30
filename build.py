@@ -110,7 +110,6 @@ if choice == "1":
 
 # build in host
 elif choice == "2":
-    os.chdir("ChatGPT-to-API")
     if not testCMD("go"):
         ERROR("Please install go first.")
         input("Press enter to exit...")
@@ -121,11 +120,18 @@ elif choice == "2":
         os.environ["https_proxy"] = run.proxy
         os.environ["http_proxy"] = run.proxy
 
+    os.chdir("ChatGPT-to-API")
     os.system("go build")
     if sys.platform.find("win32") != -1:
         os.system("copy freechatgpt.exe ..")
     else:
         os.system("cp freechatgpt ..")
+    os.chdir("../Authentication")
+    os.system("go build")
+    if sys.platform.find("win32") != -1:
+        os.system("copy authentication.exe ..")
+    else:
+        os.system("cp authentication ..")
 
 
 input("Build finished. Press enter to exit...")

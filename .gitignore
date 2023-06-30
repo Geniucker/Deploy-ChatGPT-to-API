@@ -9,3 +9,8 @@ proxies.txt
 freechatgpt
 freechatgpt.exe
 cache/
+log/
+authentication/authentication
+authentication/authentication.exe
+authentication
+authentication.exe

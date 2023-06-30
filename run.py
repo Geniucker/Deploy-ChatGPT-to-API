@@ -3,6 +3,7 @@
 
 from subprocess import getoutput, Popen, PIPE, STDOUT
 import os
+import sys
 import base64
 import hashlib
 import requests
@@ -24,6 +25,7 @@ access_tokens = [
 ]
 server_host = "0.0.0.0"
 server_port = "8080"  # if deploy in docker, set it to "8080"
+custom_API_key = ""  # leave it blank if you don't need
 
 
 def ERROR(msg):
@@ -288,13 +290,13 @@ if __name__=="__main__":
             f.write(proxy)
         proxy = "{}://{}".format(proxy_type, proxy)
     else: proxy = None
-    os.environ["SERVER_HOST"] = server_host
-    os.environ["SERVER_PORT"] = server_port
+    os.environ["SERVER_HOST"] = "0.0.0.0"
+    os.environ["SERVER_PORT"] = f"{int(server_port)-1}"
     os.environ["ENABLE_HISTORY"] = "false"
     os.environ["GIN_MODE"] = "release"
-    accout_objs = []
+    account_objs = []
     for i in accounts:
-        accout_objs.append(
+        account_objs.append(
             Auth0(
                 email=i,
                 password=accounts[i],
@@ -304,7 +306,7 @@ if __name__=="__main__":
             )
         )
     for i in access_tokens:
-        accout_objs.append(
+        account_objs.append(
             Auth0(
                 access_token=i,
                 proxy=proxy,
@@ -312,47 +314,62 @@ if __name__=="__main__":
                 code_verifier=code_verifier
             )
         )
-    while True:
-        # config access_tokens
-        access_token = []
-        for i in accout_objs:
-            access_token.append(i.refresh())
-        for i in range(len(access_token)):
-            access_token[i] = access_token[i].strip()
-            access_token[i] = "\"{}\"".format(access_token[i])
-        with open("./access_tokens.json", "w") as f:
-            f.write("[")
-            f.write(",".join(access_token))
-            f.write("]")
+
+    # run Authentication
+    if not os.path.exists("log"):
+        os.mkdir("log")
+    cmd = [
+        "./authentication" + ".exe" if sys.platform == "win32" else "",
+        f"-listenAddr={server_host}:{server_port}",
+        f"-forwardAddr=http://127.0.0.1:{int(server_port)-1}",
+        f"-key={custom_API_key}"
+    ]
+    with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=False) as authentication:
+
+        # run ChatGPT to API
+        while True:
+            # config access_tokens
+            access_token = []
+            for i in account_objs:
+                access_token.append(i.refresh())
+            for i in range(len(access_token)):
+                access_token[i] = access_token[i].strip()
+                access_token[i] = "\"{}\"".format(access_token[i])
+            with open("./access_tokens.json", "w") as f:
+                f.write("[")
+                f.write(",".join(access_token))
+                f.write("]")
 
 
-        # run
-        cmd = "./freechatgpt"
-        try:
-            screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
-            while True:
-                line = screenData.stdout.readline().decode("utf-8").strip()
-                if line.find("[GIN]") != -1:
-                    status = line.split()[5].strip()
-                    if status == "200":
-                        INFO(line)
-                    elif status[0] == "5":
-                        WARNING(line)
-                        WARNING("detected 5xx, restarting...")
-                        screenData.terminate()
-                        break
-                    elif status == "401":
-                        ERROR(line)
-                        ERROR("access_token expired, restarting...")
-                        screenData.terminate()
-                        for i in accout_objs:
-                            i.expire()
-                        break
+            # run
+            cmd = [
+                "freechatgpt" + ".exe" if sys.platform == "win32" else "",
+            ]
+            try:
+                screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
+                while True:
+                    line = screenData.stdout.readline().decode("utf-8").strip()
+                    if line.find("[GIN]") != -1:
+                        status = line.split()[5].strip()
+                        if status == "200":
+                            INFO(line)
+                        elif status[0] == "5":
+                            WARNING(line)
+                            WARNING("detected 5xx, restarting...")
+                            screenData.terminate()
+                            break
+                        elif status == "401":
+                            ERROR(line)
+                            ERROR("access_token expired, restarting...")
+                            screenData.terminate()
+                            for i in account_objs:
+                                i.expire()
+                            break
+                        else:
+                            WARNING(line)
                     else:
-                        WARNING(line)
-                else:
-                    INFO(line)
-        except:
-            screenData.terminate()
-            exit()
+                        INFO(line)
+            except:
+                screenData.terminate()
+                exit()
         
