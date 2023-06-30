@@ -319,12 +319,12 @@ if __name__=="__main__":
     if not os.path.exists("log"):
         os.mkdir("log")
     cmd = [
-        "./authentication" + ".exe" if sys.platform == "win32" else "",
+        "./" if sys.platform != "win32" else "" + "authentication" + ".exe" if sys.platform == "win32" else "",
         f"-listenAddr={server_host}:{server_port}",
         f"-forwardAddr=http://127.0.0.1:{int(server_port)-1}",
         f"-key={custom_API_key}"
     ]
-    with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=False) as authentication:
+    with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=True) as authentication:
 
         # run ChatGPT to API
         while True:
@@ -342,9 +342,7 @@ if __name__=="__main__":
 
 
             # run
-            cmd = [
-                "freechatgpt" + ".exe" if sys.platform == "win32" else "",
-            ]
+            cmd = "./freechatgpt"
             try:
                 screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
                 while True:
