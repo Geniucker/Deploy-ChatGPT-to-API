@@ -351,6 +351,7 @@ if __name__=="__main__":
                         line = line.replace(f"{server_host}:{int(server_port)-1}", f"{server_host}:{server_port}")
                     if line.find("[GIN]") != -1:
                         status = line.split()[5].strip()
+                        path = line.split()[12].strip()
                         if status == "200":
                             INFO(line)
                         elif status[0] == "5":
@@ -358,7 +359,7 @@ if __name__=="__main__":
                             WARNING("detected 5xx, restarting...")
                             screenData.terminate()
                             break
-                        elif status == "401":
+                        elif status == "401" and path == '"/v1/chat/completions"':
                             ERROR(line)
                             ERROR("access_token expired, restarting...")
                             screenData.terminate()
