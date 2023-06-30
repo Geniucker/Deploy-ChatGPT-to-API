@@ -1,7 +1,7 @@
 FROM golang:1.20.3-alpine as builder
 
 COPY ChatGPT-to-API /root/ChatGPT-to-API
-COPY Authentication /root/Authentication
+COPY Authenticatior /root/Authenticatior
 
 
 
@@ -11,9 +11,9 @@ COPY Authentication /root/Authentication
 WORKDIR /root/ChatGPT-to-API
 RUN go build && \
     chmod -R +x /root/ChatGPT-to-API
-WORKDIR /root/Authentication
+WORKDIR /root/Authenticatior
 RUN go build && \
-    chmod -R +x /root/Authentication
+    chmod -R +x /root/Authenticatior
 
 FROM python:3.9-slim
 LABEL Name=chatgpttoapi Version=0.0.1
@@ -21,7 +21,7 @@ LABEL Name=chatgpttoapi Version=0.0.1
 WORKDIR /app
 
 COPY --from=builder /root/ChatGPT-to-API/freechatgpt /app/freechatgpt
-COPY --from=builder /root/Authentication/authentication /app/authentication
+COPY --from=builder /root/Authenticatior/authentication /app/authentication
 COPY requirements.txt /app/requirements.txt
 
 RUN pip3 install -r requirements.txt

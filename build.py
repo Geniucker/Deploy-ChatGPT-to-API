@@ -126,7 +126,7 @@ elif choice == "2":
         os.system("copy freechatgpt.exe ..")
     else:
         os.system("cp freechatgpt ..")
-    os.chdir("../Authentication")
+    os.chdir("../Authenticatior")
     os.system("go build")
     if sys.platform.find("win32") != -1:
         os.system("copy authentication.exe ..")
