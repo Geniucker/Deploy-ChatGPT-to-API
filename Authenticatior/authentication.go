@@ -8,7 +8,7 @@ import (
 
 func authentication(key string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "OPTIONS" && r.Header.Get("Authorization") != "Bearer sk-asdfvnaweisofnvbjiawee" {
+		if r.Method != "OPTIONS" && r.Header.Get("Authorization") != "Bearer "+key {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
