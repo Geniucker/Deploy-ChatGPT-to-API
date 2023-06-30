@@ -319,12 +319,12 @@ if __name__=="__main__":
     if not os.path.exists("log"):
         os.mkdir("log")
     cmd = [
-        "./" if sys.platform != "win32" else "" + "authentication" + ".exe" if sys.platform == "win32" else "",
+        ("./" if sys.platform != "win32" else "") + "authentication" + (".exe" if sys.platform == "win32" else ""),
         f"-listenAddr={server_host}:{server_port}",
         f"-forwardAddr=http://127.0.0.1:{int(server_port)-1}",
         f"-key={custom_API_key}"
     ]
-    with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=True) as authentication:
+    with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=False) as authentication:
 
         # run ChatGPT to API
         while True:
@@ -347,6 +347,8 @@ if __name__=="__main__":
                 screenData = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=False)
                 while True:
                     line = screenData.stdout.readline().decode("utf-8").strip()
+                    if line.find(f"{server_host}:{int(server_port)-1}") != -1:
+                        line = line.replace(f"{server_host}:{int(server_port)-1}", f"{server_host}:{server_port}")
                     if line.find("[GIN]") != -1:
                         status = line.split()[5].strip()
                         if status == "200":
