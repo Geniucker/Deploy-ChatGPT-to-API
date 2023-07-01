@@ -27,8 +27,8 @@ custom_API_key = ""  # leave it blank if you don't need
 server_host = "0.0.0.0"
 server_port = "8080"  # if deploy in docker, set it to "8080"
 # https (If you don't need, leave it blank)
-cert_path = ""
-key_path = ""
+cert_filename = ""
+key_filename = ""
 
 
 def ERROR(msg):
@@ -328,10 +328,10 @@ if __name__=="__main__":
         f"-forwardAddr=http://127.0.0.1:{int(server_port)-1}",
         f"-key={custom_API_key}"
     ]
-    if cert_path != "" and key_path != "" and os.path.exists(f"./certifications/{cert_path}") and os.path.exists(f"./certifications/{key_path}"):
+    if cert_filename != "" and key_filename != "" and os.path.exists(f"./certifications/{cert_filename}") and os.path.exists(f"./certifications/{key_filename}"):
         cmd.append(
-            f"-certPath=./certifications/{cert_path}",
-            f"-keyPath=./certifications/{key_path}"
+            f"-certPath=./certifications/{cert_filename}",
+            f"-keyPath=./certifications/{key_filename}"
         )
     with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=False) as authentication:
 
