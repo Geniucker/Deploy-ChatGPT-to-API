@@ -5,8 +5,8 @@ import (
 )
 
 func main() {
-	listenAddr, forwardAddr, key := ParseParams()
+	listenAddr, forwardAddr, key, certPath, keyPath := ParseParams()
 	log.Printf("Listening on %s, forwarding to %s", listenAddr, forwardAddr)
 
-	AuthenticationAndForward(listenAddr, forwardAddr, key)
+	AuthenticationAndForward(listenAddr, forwardAddr, key, certPath, keyPath)
 }

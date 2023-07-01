@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 func authentication(key string, next http.Handler) http.Handler {
@@ -66,14 +67,27 @@ func handleRequests(forwardAddr string) http.Handler {
 	})
 }
 
-func AuthenticationAndForward(listenAddr string, forwardAddr string, key string) {
+func AuthenticationAndForward(listenAddr string, forwardAddr string, key string, certPath string, keyPath string) {
 	handler := authentication(key, handleRequests(forwardAddr))
 
 	http.Handle("/", handler)
 
 	log.Printf("Starting HTTP proxy on %s", listenAddr)
-	err := http.ListenAndServe(listenAddr, nil)
+	var err error
+	if fileExists(certPath) && fileExists(keyPath) {
+		err = http.ListenAndServeTLS(listenAddr, certPath, keyPath, nil)
+	} else {
+		err = http.ListenAndServe(listenAddr, nil)
+	}
 	if err != nil {
 		log.Fatalf("Failed to listen on %s: %s", listenAddr, err)
 	}
+}
+
+func fileExists(path string) bool {
+	if path == "" {
+		return false
+	}
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
 }

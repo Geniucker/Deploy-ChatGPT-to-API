@@ -13,6 +13,7 @@ services:
       - ./run.py:/app/run.py
       - ./cache:/app/cache
       - ./log:/app/log
+      - ./certifications:/app/certifications
     tty: true
     stdin_open: true
     container_name: chatgpttoapi

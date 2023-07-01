@@ -23,9 +23,12 @@ access_tokens = [
     # "your access token",
     # "your another access token"
 ]
+custom_API_key = ""  # leave it blank if you don't need
 server_host = "0.0.0.0"
 server_port = "8080"  # if deploy in docker, set it to "8080"
-custom_API_key = ""  # leave it blank if you don't need
+# https (If you don't need, leave it blank)
+cert_path = ""
+key_path = ""
 
 
 def ERROR(msg):
@@ -318,12 +321,18 @@ if __name__=="__main__":
     # run Authentication
     if not os.path.exists("log"):
         os.mkdir("log")
+
     cmd = [
         ("./" if sys.platform != "win32" else "") + "authentication" + (".exe" if sys.platform == "win32" else ""),
         f"-listenAddr={server_host}:{server_port}",
         f"-forwardAddr=http://127.0.0.1:{int(server_port)-1}",
         f"-key={custom_API_key}"
     ]
+    if cert_path != "" and key_path != "" and os.path.exists(f"./certifications/{cert_path}") and os.path.exists(f"./certifications/{key_path}"):
+        cmd.append(
+            f"-certPath=./certifications/{cert_path}",
+            f"-keyPath=./certifications/{key_path}"
+        )
     with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=False) as authentication:
 
         # run ChatGPT to API

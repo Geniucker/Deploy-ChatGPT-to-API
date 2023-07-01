@@ -10,7 +10,10 @@ freechatgpt
 freechatgpt.exe
 cache/
 log/
-authentication/authentication
-authentication/authentication.exe
+
 authentication
 authentication.exe
+
+/certifications/*
+!/certifications/.gitkeep
+
