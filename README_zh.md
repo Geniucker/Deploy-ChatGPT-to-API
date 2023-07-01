@@ -12,7 +12,7 @@
 我增加的功能：  
 - 实现了账号密码自动获取 access_token，并在到期后自动刷新新的 access_token（仅限账号密码登录，谷歌和微软登录只能手动填写 access_token，同时原项目只支持单账号一键登录，本项目支持了多账户一键获取 access_token）  
 - 实现了鉴权。原项目是基于对网页版的逆向工程，所以不需要验证 API key。但是，为了安全起见，我添加了一个验证功能，你可以设置想要的 API key 来验证请求。如果不需要，可以留空。  
-
+- 支持 https ，只需提供证书和密钥即可创建 https 服务器，无需额外进行反代  
 
 ## 依赖
 - git  
@@ -30,8 +30,10 @@
    - `server_host`: 你想让 ChatGPT-to-API 监听的主机  
    - `server_port`: 你想让 ChatGPT-to-API 监听的端口  
    - `custom_API_key`: 理论上，由于原项目是基于对网页版的逆向工程，所以不需要验证 API key。但是，为了安全起见，我添加了一个验证功能，你可以设置想要的 API key 来验证请求。如果不需要，可以留空。  
+   - `cert_filename`: 证书的文件名，请注意不是路径。如果不需要 https ，请留空。  
+   - `key_filename`: 密钥的文件名，请注意不是路径。如果不需要 https ，请留空。  
 
-![image](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/7fc9afe8-374e-4d58-908d-b3a561ada9cd)  
+![image](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/5c33d3f9-bf21-4a04-af34-579dc6e5fe73)  
 3. **如果在主机中部署**: 运行 `pip3 install -r requirements.txt`  
    **如果在 Docker 中部署**: 这一步不需要做任何事情  
 4. 运行 `build.py` 并按照提示操作。  
@@ -40,7 +42,13 @@
    在 `/dcta/` 中打开一个终端。运行 `docker compose up -d`  
    **如果在主机中部署**:  
    在 `/dcta/` 中打开一个终端。运行 `run.py`  
-6. 尽情享用吧~  
+6. 设置 https （可选）：  
+   **如果在 Docker 中部署**:  
+   修改`docker-compose.yml`中的`volumes`字段，将`./certifications`替换为你的证书和密钥的所在的路径，如图：  
+   ![image](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/2ae9c330-c360-40f1-b741-03c217191e11)  
+   **如果在主机中部署**:  
+   将证书和密钥放在或软链接到 `certifications` 文件夹中。  
+7. 尽情享用吧~  
 
 ## FAQ
 - Q: 如果 OpenAI 的 access_token 过期了怎么办？  
