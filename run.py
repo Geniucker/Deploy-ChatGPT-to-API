@@ -330,7 +330,9 @@ if __name__=="__main__":
     ]
     if cert_filename != "" and key_filename != "" and os.path.exists(f"./certifications/{cert_filename}") and os.path.exists(f"./certifications/{key_filename}"):
         cmd.append(
-            f"-certPath=./certifications/{cert_filename}",
+            f"-certPath=./certifications/{cert_filename}"
+        )
+        cmd.append(
             f"-keyPath=./certifications/{key_filename}"
         )
     with Popen(cmd, stdout=open("./log/authentication.log", "w") , stderr=STDOUT, shell=False) as authentication:
