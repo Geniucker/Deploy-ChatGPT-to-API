@@ -53,3 +53,12 @@
 ## FAQ
 - Q: 如果 OpenAI 的 access_token 过期了怎么办？  
   A: 如果发生这种情况，对 fake api 的请求将在 ChatGPT-to-API 中导致 `401` 状态码。我使用 python 检查这个代码，并将自动生成 access_token 并自动重启 ChatGPT-to-API。  
+- Q: 哪里能看到日志  
+  A: 这个项目分为两部分，一部分是作为 ChatGPT-to-API 的辅助，进行 获取 token 和自动 token 刷新等操作，它的日志会直接打印在控制台里  
+     另一个部分是为了实现鉴权和 https而用 go 写的，它的日志在 `log` 文件夹下的 `authentication.log` 中  
+     对于部署在 docker 中的，可以查看容器的日志从而看到前者的日志，后者的日志可以在宿主的`log/authentication.log`中查看  
+
+## 贡献
+欢迎提出 issue 和 PR。  
+对于 bug 请参照 FAQ 中的日志查看方法，提供日志。  
+![log](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/e8472434-780d-4dcc-aaa1-75154c21b917)  

@@ -4,7 +4,6 @@ These days I found an interesting repo [ChatGPT-to-API](https://github.com/acheo
 However, it's docs are not specific. This repo is to help you easily config and deploy [ChatGPT-to-API](https://github.com/acheong08/ChatGPT-to-API).  
 
 ## Features
-
 Original Project Features:  
 - Implemented a local Fake API based on a web version of reverse engineering.  
 - Supports calling all models supported by the web version (GPT-4 requires Plus subscription).  
@@ -54,3 +53,12 @@ Additional Features I have added:
 ## FAQ
 - Q: What if the access_token of OpenAI expire?  
   A: If this happen, the request to the fake api will cause `401` status code in ChatGPT-to-API. I use python to inspect this code and will regenerate access_token and restart ChatGPT-to-API automatically.  
+- Q: Where can I find logs  
+  A: This project is divided into two parts. One part is the auxiliary for ChatGPT-to-API, which handles operations like token retrieval and automatic token refresh. Its logs are directly printed on the console.  
+  The other part is implemented in Go for authentication and HTTPS. Its logs are located in the `log` folder, specifically in the `authentication.log` file.  
+  For deployments within Docker, you can view the container logs to see the logs of the former part. As for the logs of the latter part, you can find them in `log/authentication.log` on the host machine.  
+
+## Contribution
+Welcome to raise issues and PRs.  
+For bugs, please refer to the log viewing method in the FAQ and provide the logs.  
+![log](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/e8472434-780d-4dcc-aaa1-75154c21b917)  

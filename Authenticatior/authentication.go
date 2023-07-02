@@ -9,8 +9,10 @@ import (
 
 func authentication(key string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Received %s request for %s", r.Method, r.URL.Path)
 		if key != "" && r.Method != "OPTIONS" && r.Header.Get("Authorization") != "Bearer "+key {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			log.Printf("Unauthorized %s request for %s", r.Method, r.URL.Path)
 			return
 		}
 
@@ -20,7 +22,6 @@ func authentication(key string, next http.Handler) http.Handler {
 
 func handleRequests(forwardAddr string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Received %s request for %s", r.Method, r.URL.Path)
 		// create new request to forwardAddr
 		req, err := http.NewRequest(r.Method, forwardAddr+r.URL.Path, r.Body)
 		if err != nil {
