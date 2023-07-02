@@ -8,6 +8,10 @@ Original Project Features:
 - Implemented a local Fake API based on a web version of reverse engineering.  
 - Supports calling all models supported by the web version (GPT-4 requires Plus subscription).  
 - Supports multiple users to prevent triggering rate limits.  
+- Implemented APIs:  
+  - `/v1/chat/completions`  
+  - `/v1/engines`: The original project accessed this api to obtain available models using the official API and key. However, since it relies on the web-based API, it is not very meaningful. Moreover, this API is temporarily unavailable in order to implement custom API keys.  
+  -  `/v1/models`: The original project accessed this api to obtain available models using the official API and key. However, since it relies on the web-based API, it is not very meaningful. Moreover, this API is temporarily unavailable in order to implement custom API keys.  
 
 Additional Features I have added:  
 - Implemented automatic retrieval of access_token using emails and passwords, and automatically refreshes the access_token upon expiration (only applicable for email password login; Google and Microsoft logins require manual access_token input). The original project only supports single-account one-click login, while this project supports multiple-account one-click access_token retrieval.  
