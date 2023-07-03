@@ -95,8 +95,8 @@ if choice == "1":
                 proxy = run.proxy
             f.write(
                 dockerfile.format(
-                    "ENV http_proxy {}://{}".format(run.proxy_type, proxy),
-                    "ENV https_proxy {}://{}".format(run.proxy_type, proxy)
+                    "ARG http_proxy={}://{}".format(run.proxy_type, proxy),
+                    "ARG https_proxy={}://{}".format(run.proxy_type, proxy)
                 )
             )
     else:

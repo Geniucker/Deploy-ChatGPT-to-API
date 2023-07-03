@@ -4,15 +4,17 @@ COPY ChatGPT-to-API /root/ChatGPT-to-API
 COPY Authenticatior /root/Authenticatior
 
 
-
+RUN echo "$(ip -4 route list match 0/0 | awk '{{print $3}}')" > /tmp/localhost
 {}
 {}
 
 WORKDIR /root/ChatGPT-to-API
-RUN go build && \
+RUN export http_proxy=${{http_proxy//host.docker.internal/$(cat /tmp/localhost)}} && \
+    go build && \
     chmod -R +x /root/ChatGPT-to-API
 WORKDIR /root/Authenticatior
-RUN go build && \
+RUN export http_proxy=${{http_proxy//host.docker.internal/$(cat /tmp/localhost)}} && \
+    go build && \
     chmod -R +x /root/Authenticatior
 
 FROM python:3.9-slim
