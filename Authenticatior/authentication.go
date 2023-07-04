@@ -15,7 +15,9 @@ func authentication(key string, next http.Handler) http.Handler {
 			log.Printf("Unauthorized %s request for %s", r.Method, r.URL.Path)
 			return
 		}
-
+		if r.Header.Get("Authorization") != "" {
+			r.Header.Del("Authorization")
+		}
 		next.ServeHTTP(w, r)
 	})
 }
