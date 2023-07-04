@@ -51,16 +51,15 @@ func handleRequests(forwardAddr string) http.Handler {
 		buf := make([]byte, 64)
 		for {
 			n, err := resp.Body.Read(buf)
+			if n > 0 {
+				w.Write(buf[:n])
+				flusher.Flush()
+			}
 			if err == io.EOF {
 				break
 			} else if err != nil {
 				http.Error(w, "Wrong streaming", http.StatusBadGateway)
 				return
-			} else {
-				if n > 0 {
-					w.Write(buf[:n])
-					flusher.Flush()
-				}
 			}
 		}
 
