@@ -6,7 +6,6 @@ from subprocess import getoutput, Popen, PIPE
 import os
 import sys
 import run
-import time
 
 def ERROR(msg):
     print("\033[31m[ERROR]\033[0m" + msg)
@@ -31,12 +30,17 @@ def testCMD(cmd:str):
                 break
     return check
 
+# check if run in root of repo
+if not os.path.exists("./build.py"):
+    ERROR("Please run this script in the root of your cloned repo (Deploy-Chatgpt-to-API).")
 
+# check git command
 if not testCMD("git"):
     ERROR("Please install git first.")
     input("Press enter to exit...")
     exit(1)
 
+# clone ChatGPT-to-API
 if not os.path.exists("ChatGPT-to-API"):
     choice = ""
     while choice not in ["1", "2"]:
@@ -52,6 +56,8 @@ if not os.path.exists("ChatGPT-to-API"):
 else:
     print("Try to update ChatGPT-to-API...")
     os.system("cd ChatGPT-to-API && git pull && cd ..")
+if not os.path.exists("./ChatGPT-to-API"):
+    ERROR("Clone failed. Please check your network and try again.")
 
 choice = ""
 while choice not in ["1", "2"]:
