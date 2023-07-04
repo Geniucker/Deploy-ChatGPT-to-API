@@ -40,7 +40,7 @@
 ![image](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/5c33d3f9-bf21-4a04-af34-579dc6e5fe73)  
 3. **如果在主机中部署**: 运行 `pip3 install -r requirements.txt`  
    **如果在 Docker 中部署**: 这一步不需要做任何事情  
-4. 运行 `build.py` 并按照提示操作。  
+4. 运行 `build.py` 并按照提示操作 (Linux中可能需要使用`sudo`以获得docker的权限)。  
 5. 运行服务:  
    **如果在 Docker 中部署**:  
    在 `/dcta/` 中打开一个终端。运行 `docker compose up -d`  

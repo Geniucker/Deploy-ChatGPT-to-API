@@ -40,7 +40,7 @@ Additional Features I have added:
 ![image](https://github.com/Geniucker/Deploy-ChatGPT-to-API/assets/61449208/5c33d3f9-bf21-4a04-af34-579dc6e5fe73)  
 3. **If deployed in host**: run `pip3 install -r requirements.txt`  
    **If deployed in docker**: nothing to do in this step  
-4. run `build.py` and follow the instructions.  
+4. run `build.py` and follow the instructions (You may need to use `sudo` to get the permission of Docker).  
 5. run the service:  
    **If deployed in docker**:  
    open a terminal in `/dcta/`. run `docker compose up -d`  

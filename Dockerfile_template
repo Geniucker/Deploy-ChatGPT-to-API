@@ -10,10 +10,12 @@ RUN echo "$(ip -4 route list match 0/0 | awk '{{print $3}}')" > /tmp/localhost
 
 WORKDIR /root/ChatGPT-to-API
 RUN export http_proxy=${{http_proxy//host.docker.internal/$(cat /tmp/localhost)}} && \
+    export https_proxy=${{https_proxy//host.docker.internal/$(cat /tmp/localhost)}} && \
     go build && \
     chmod -R +x /root/ChatGPT-to-API
 WORKDIR /root/Authenticatior
 RUN export http_proxy=${{http_proxy//host.docker.internal/$(cat /tmp/localhost)}} && \
+    export https_proxy=${{https_proxy//host.docker.internal/$(cat /tmp/localhost)}} && \
     go build && \
     chmod -R +x /root/Authenticatior
 
