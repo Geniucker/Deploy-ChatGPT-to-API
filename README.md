@@ -57,6 +57,10 @@ Additional Features I have added:
 ## FAQ
 - Q: What if the access_token of OpenAI expire?  
   A: If this happen, the request to the fake api will cause `401` status code in ChatGPT-to-API. I use python to inspect this code and will regenerate access_token and restart ChatGPT-to-API automatically.  
+- Q: Why do I get a 404 error?  
+  A: Please refer to the "Implemented APIs" section in the [Features](#Features) section. Accessing a non-existent interface will return a 404 error. Additionally, the `/v1/chat/completions` interface does not support GET requests, so accessing it directly from a browser will also result in a 404 error.  
+- Q: Why do I get a 500 error?  
+  A: A 500 error is typically related to IP issues, meaning that your IP address has been banned by OpenAI.  
 - Q: Where can I find logs  
   A: This project is divided into two parts. One part is the auxiliary for ChatGPT-to-API, which handles operations like token retrieval and automatic token refresh. Its logs are directly printed on the console.  
   The other part is implemented in Go for authentication and HTTPS. Its logs are located in the `log` folder, specifically in the `authentication.log` file.  

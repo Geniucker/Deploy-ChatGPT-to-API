@@ -57,6 +57,10 @@
 ## FAQ
 - Q: 如果 OpenAI 的 access_token 过期了怎么办？  
   A: 如果发生这种情况，对 fake api 的请求将在 ChatGPT-to-API 中导致 `401` 状态码。我使用 python 检查这个代码，并将自动生成 access_token 并自动重启 ChatGPT-to-API。  
+- Q: 为什么会 404？  
+  A: 请看 [特性](#特性) 中“已实现的接口”部分，访问不存在的接口会返回 404。同时，`/v1/chat/completions`接口不支持 GET 请求，所以用浏览器直接访问会返回 404。  
+- Q: 为什么会 500？  
+  A: 500 基本上为ip问题，也就是你的ip被OpenAI ban了  
 - Q: 哪里能看到日志  
   A: 这个项目分为两部分，一部分是作为 ChatGPT-to-API 的辅助，进行 获取 token 和自动 token 刷新等操作，它的日志会直接打印在控制台里  
      另一个部分是为了实现鉴权和 https而用 go 写的，它的日志在 `log` 文件夹下的 `authentication.log` 中  
