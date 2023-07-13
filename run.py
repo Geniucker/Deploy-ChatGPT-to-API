@@ -12,6 +12,7 @@ import datetime
 from urllib.parse import urlparse, parse_qs
 from certifi import where
 from datetime import datetime as dt
+import datetime
 
 proxy = "localhost:7890"  # if you don't use proxy, set it to ""
 proxy_type = "socks5"  # socks5 or http
@@ -48,6 +49,8 @@ def generate_code_challenge(code_verifier):
     m.update(code_verifier.encode('utf-8'))
     code_challenge = base64.urlsafe_b64encode(m.digest()).rstrip(b'=')
     return code_challenge.decode('utf-8')
+def default_api_prefix():
+    return 'https://ai-{}.fakeopen.com'.format((dt.now() - datetime.timedelta(days=1)).strftime('%Y%m%d'))
 code_verifier = generate_code_verifier()
 code_challenge = generate_code_challenge(code_verifier)
 class Auth0:
@@ -136,15 +139,27 @@ class Auth0:
             self.make_cache()
             return self.access_token
     def auth(self) -> str:
-        return self.__part_two()
-    def __part_two(self) -> str:
+        return self.__part_one()
+    def __part_one(self) -> str:
+        url = '{}/auth/preauth'.format(default_api_prefix())
+        resp = self.session.get(url, allow_redirects=False, **self.req_kwargs)
+
+        if resp.status_code == 200:
+            json = resp.json()
+            if 'preauth_cookie' not in json or not json['preauth_cookie']:
+                raise Exception('Get preauth cookie failed.')
+
+            return self.__part_two(json['preauth_cookie'])
+        else:
+            raise Exception('Error request preauth.')
+    def __part_two(self, preauth: str) -> str:
         code_challenge = self.code_challenge
         code_verifier = self.code_verifier
         url = 'https://auth0.openai.com/authorize?client_id=pdlLIX2Y72MIl2rhLhTE9VV9bN905kBh&audience=https%3A%2F' \
                 '%2Fapi.openai.com%2Fv1&redirect_uri=com.openai.chat%3A%2F%2Fauth0.openai.com%2Fios%2Fcom.openai.chat' \
                 '%2Fcallback&scope=openid%20email%20profile%20offline_access%20model.request%20model.read' \
                 '%20organization.read%20offline&response_type=code&code_challenge={}' \
-                '&code_challenge_method=S256&prompt=login'.format(code_challenge)
+                '&code_challenge_method=S256&prompt=login&preauth_cookie={}'.format(code_challenge, preauth)
         return self.__part_three(code_verifier, url)
     def __part_three(self, code_verifier, url: str) -> str:
         headers = {
